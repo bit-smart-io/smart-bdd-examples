@@ -2,15 +2,16 @@ plugins {
     java
 }
 
-group = "org.example"
-version = "unspecified"
-
 repositories {
     mavenLocal()
     mavenCentral()
 }
 
 dependencies {
+    implementation(project(":service"))
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.1")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.1")
+
     testImplementation(platform("org.junit:junit-bom:5.9.3"))
     testImplementation(platform("io.cucumber:cucumber-bom:7.13.0"))
 

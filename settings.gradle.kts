@@ -7,5 +7,6 @@
 
 rootProject.name = "smart-bdd-examples"
 include("service")
-include("cucumber")
+include("cucumber:cucumber-1")
 include("smart-bdd")
+

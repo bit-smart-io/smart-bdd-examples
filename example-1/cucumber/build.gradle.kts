@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":service"))
+    implementation(project(":example-1:service"))
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.1")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.1")
 

@@ -6,7 +6,11 @@
  */
 
 rootProject.name = "smart-bdd-examples"
-include("service")
-include("cucumber:cucumber-1")
-include("smart-bdd")
+include("example-1:service")
+include("example-1:cucumber")
+include("example-1:smart-bdd")
+
+include("example-2:service")
+include("example-2:cucumber")
+
 

@@ -12,5 +12,6 @@ include("example-1:smart-bdd")
 
 include("example-2:service")
 include("example-2:cucumber")
+include("example-2:smart-bdd")
 
 

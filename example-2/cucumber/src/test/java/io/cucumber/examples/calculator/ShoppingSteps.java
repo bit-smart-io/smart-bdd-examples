@@ -28,8 +28,7 @@ public class ShoppingSteps {
 
     @When("I pay with currency {int} {string}")
     public void i_pay_with_currency(Integer amount, String currency) {
-        payBuilder.withAmount(amount);
-        payBuilder.withCurrency(currency);
+        payBuilder.withAmount(amount).withCurrency(currency);
     }
 
     @When("with currency {string}")
@@ -83,8 +82,8 @@ public class ShoppingSteps {
     }
 
     class Pay {
-        private Integer amount = 0;
-        private String currency = null;
+        private final Integer amount;
+        private final String currency;
 
         public Pay(Integer amount, String currency) {
             this.amount = amount;
@@ -114,12 +113,14 @@ public class ShoppingSteps {
             return new Pay(amount, currency);
         }
 
-        public void withAmount(int amount) {
+        public PayBuilder withAmount(int amount) {
             this.amount = amount;
+            return this;
         }
 
-        public void withCurrency(String currency) {
+        public PayBuilder withCurrency(String currency) {
             this.currency = currency;
+            return this;
         }
     }
 }

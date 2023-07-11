@@ -1,6 +1,4 @@
-This is compare different frameworks to Smart BDD.
-
-This is a comparison of Cucumber and Smart BDD using Java and JUnit5.
+## This is a comparison of Cucumber and Smart BDD using Java and JUnit5.
 
 Cucumber is the leading Behavior-driven development (BDD) framework. It is language agnostic and integrates with other
 frameworks. You write the specification/feature, then write the glue code, then write the test code.
@@ -45,7 +43,7 @@ Cucumber - https://github.com/cucumber/cucumber-jvm/tree/main/examples/calculato
 
 Create a repo with one example calculator-java-junit5 copy and pasted over.
 
-*First we have Cucumber*
+### First let's implement the Cucumber solution
 
 Feature file
 
@@ -138,7 +136,7 @@ tasks.test {
 }
 ```
 
-**Secondly we will implement with Smart BDD**
+### Secondly we will implement the Smart BDD solution
 
 ```java
 
@@ -207,7 +205,7 @@ With have removed feature file. The feature file has a few main draw backs:
 
 You don't have these drawbacks in Smart BDD, in fact it promotes bests practices and productively.
 
-In the next section I'll try to demonstrate the complexity Cucumber.
+### In the next section I'll try to demonstrate the complexity of Cucumber
 
 Let's dive in something more advanced:
 
@@ -375,7 +373,7 @@ Let's count the number of lines:
 
 Hopefully I have demonstrated the simplicity and productivity of Smart BDD.
 
-PLease see following for an example of using diagrams with Smart BDD.
+### PLease see following for an example of using diagrams with Smart BDD.
 ![alt text](docs/images/get-book.jpg "Doc Snippet")
 
 This is source code:
@@ -387,46 +385,46 @@ This is source code:
 public class BookControllerIT {
     // skipped setup...
 
-    @Override
-    public void doc() {
-        featureNotes("Working progress for example of usage Smart BDD");
-    }
+   @Override
+   public void doc() {
+     featureNotes("Working progress for example of usage Smart BDD");
+   }
+   
+   @BeforeEach
+   void setupUml() {
+       sequenceDiagram()
+         .addActor("User")
+         .addParticipant("BookStore")
+         .addParticipant("ISBNdb");
+   }
+   
+   @Order(0)
+   @Test
+   public void getBookBy13DigitIsbn_returnsTheCorrectBook() {
+     whenGetBookByIsbnIsCalledWith(VALID_13_DIGIT_ISBN_FOR_BOOK_1);
+     thenTheResponseIsEqualTo(BOOK_1);
+   }
 
-    @BeforeEach
-    void setupUml() {
-        sequenceDiagram()
-                .addActor("User")
-                .addParticipant("BookStore")
-                .addParticipant("ISBNdb");
-    }
+   private void whenGetBookByIsbnIsCalledWith(String isbn) {
+      HttpHeaders headers = new HttpHeaders();
+      headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
+      response = template.getForEntity("/book/" + isbn, String.class, headers);
+      generateSequenceDiagram(isbn, response, headers);
+   }
 
-    @Order(0)
-    @Test
-    public void getBookBy13DigitIsbn_returnsTheCorrectBook() {
-        whenGetBookByIsbnIsCalledWith(VALID_13_DIGIT_ISBN_FOR_BOOK_1);
-        thenTheResponseIsEqualTo(BOOK_1);
-    }
+   private void generateSequenceDiagram(String isbn, ResponseEntity<String> response, HttpHeaders headers) {
+      sequenceDiagram().add(aMessage().from("User").to("BookStore").text("/book/" + isbn));
 
-    public void whenGetBookByIsbnIsCalledWith(String isbn) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
 
-        sequenceDiagram().add(aMessage().from("User").to("BookStore").text("/book/" + isbn));
-        response = template.getForEntity("/book/" + isbn, String.class, headers);
+      List<ServeEvent> allServeEvents = getAllServeEvents();
+      allServeEvents.forEach(event -> {
+         sequenceDiagram().add(aMessage().from("BookStore").to("ISBNdb").text(event.getRequest().getUrl()));
+         sequenceDiagram().add(aMessage().from("ISBNdb").to("BookStore").text(
+                 event.getResponse().getBodyAsString() +  " [" + event.getResponse().getStatus() + "]"));
+      });
 
-        List<ServeEvent> allServeEvents = getAllServeEvents();
-        allServeEvents.forEach(event -> {
-            sequenceDiagram().add(aMessage().from("BookStore").to("ISBNdb").text(event.getRequest().getUrl()));
-            sequenceDiagram().add(aMessage().from("ISBNdb").to("BookStore").text(
-                    event.getResponse().getBodyAsString() + " [" + event.getResponse().getStatus() + "]"));
-        });
-
-        sequenceDiagram().add(aMessage().from("BookStore").to("User").text(response.getBody() + " [" + response.getStatusCode().value() + "]"));
-    }
-
-    private void thenTheResponseIsEqualTo(IsbnBook book) {
-        assertThat(bookFromJson(response.getBody())).isEqualTo(book);
-    }
+      sequenceDiagram().add(aMessage().from("BookStore").to("User").text(response.getBody() + " [" + response.getStatusCode().value() + "]"));
+   }
 
     // skipped helper classes...
 }

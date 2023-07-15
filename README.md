@@ -20,7 +20,7 @@ The difference in approach leads to Smart BDD
 * Therefore, increasing productivity
 * Oh and you get sequence diagrams (see below) plus many new features are in the pipeline
 
-Both goals are same in nutshell - specifications that serve as documentation that exercise tests.
+Both goals are same, in nutshell - specifications that can be read by anyone and tests that are exercised.
 
 Implementing BDD with Cucumber, will give you benefits. However, there is a technical cost to adding and maintaining
 feature files. This means extra work has to be done.
@@ -38,10 +38,13 @@ This approach leads to - we'll explore in more with code detail below:
 * Therefore, increasing the cost of maintaining and adding testing
 * Therefore, decreased coverage
 
-It's time to try and back these claims up - lets check the latest examples of
+The quality of code can be measured in its ability to change! Hence best practices and less code, fulfills this brief. 
+
+It's time to try and back these claims up - lets check the latest examples from
 Cucumber - https://github.com/cucumber/cucumber-jvm/tree/main/examples/calculator-java-junit5
 
-Create a repo with one example calculator-java-junit5 copy and pasted over.
+Create a repo with one example calculator-java-junit5 copy and pasted it in to a new project -
+ https://github.com/bit-smart-io/smart-bdd-examples
 
 ### First let's implement the Cucumber solution
 
@@ -196,12 +199,12 @@ My change should be 4
 
 Notice how more simple Smart BDD is, much less moving parts. 1 test class vs 4 files.
 
-With have removed feature file. The feature file has a few main draw backs:
+We removed the Cucumber feature file. The feature file has a few main draw backs:
 
 * It adds complexity of mapping between itself and the source code
-* As an abstraction it will leak in to bottom layers
+* As an abstraction it will leak in to the bottom layers
 * It is very hard to keep feature files consistent
-* When developing with your IDE, it will need to support the feature file, frequently you'll be left with no support
+* When developing in an IDE, it will need to support the feature file, frequently you'll be left with no support
 
 You don't have these drawbacks in Smart BDD, in fact it promotes bests practices and productively.
 
@@ -242,26 +245,26 @@ harder to maintain.
 We have 3 options:
 
 1. Mutate `i_pay` method to handle a currency. If we had 10's or 100's occurrences of `When I pay ..` this would be
-   risky and time-consuming. When we add "Visa" payment method we are starting to add complexity to an existing method.
+   risky and time-consuming. If we add "Visa" payment method, we are starting to add complexity to an existing method.
 2. Create a new method doesn't start with `I pay`. It could be `With currency I pay 25 "Dollars"`. Not idea as this
    isn't really what wanted. It looses discoverability. How would we add "Visa" payment method?
 3. Use multiple steps `I pay` and `with currency`. This is the most maintainable solution. For discoverability, you'd
    need a consistent naming convention. With a large codebase, good luck with discoverability, as they are loosely
    coupled in the feature file, but coupled in code.
 
-Option 1, is the one have seen the most - God glue methods with very complicated regular expression, with Cucumber
-Expressions it's the cleanest code I have seen. According to cucumber documentation conjunction steps are an
+Option 1, is the one have seen the most - God glue methods with very complicated regular expressions, with Cucumber
+Expressions it's the cleanest code I have seen. According to the Cucumber documentation, conjunction steps are an
 anti-pattern https://cucumber.io/docs/guides/anti-patterns/?lang=java. If I added a payment
 method `I pay 25 "Dollars" with "Visa"` I don't know if this constitutes the conjunction step anti-pattern. If we get
 another requirement, "Visa" payments doubled on a "Friday", setting the day surly constitutes another step.
 
-Option 3 is really a thin layer on a builder. Below shows one possible implementation of a builder. We can see this
-approach, adding the day of the week would be trivial (as we've chosen to use the builder pattern).
+Option 3 is really a thin layer on a builder. Below shows one possible implementation of a builder. With this approach, 
+adding the day of the week would be trivial (as we've chosen to use the builder pattern).
 
 ```gherkin
 When I pay 25
-When With currency "Dollars"
-```   
+And with currency "Dollars"
+```
 
 ```java
 public class ShoppingSteps {
@@ -311,27 +314,25 @@ public class ShoppingTest {
     private final ShoppingService shoppingService = new ShoppingService();
     private PayBuilder payBuilder = new PayBuilder();
 
-    @Test
-    void giveCorrectChange() {
-        givenTheFollowingGroceries(List.of(
-                item("milk", 9),
-                item("bread", 7),
-                item("soap", 5)
-        ));
-        whenIPay(25);
-        myChangeShouldBe(4);
-    }
+   @Test
+   void giveCorrectChange() {
+      givenTheFollowingGroceries(
+           item("milk", 9),
+           item("bread", 7),
+           item("soap", 5));
+      whenIPay(25);
+      myChangeShouldBe(4);
+   }
 
-    @Test
-    void giveCorrectChangeWhenCurrencyIsDollars() {
-        givenTheFollowingGroceries(List.of(
-                item("milk", 9),
-                item("bread", 7),
-                item("soap", 5)
-        ));
-        whenIPay(25).withCurrency("Dollars");
-        myChangeShouldBe(29);
-    }
+   @Test
+   void giveCorrectChangeWhenCurrencyIsDollars() {
+      givenTheFollowingGroceries(
+           item("milk", 9),
+           item("bread", 7),
+           item("soap", 5));
+      whenIPay(25).withCurrency("Dollars");
+      myChangeShouldBe(29);
+   }
 
     public PayBuilder whenIPay(int amount) {
         return payBuilder.withAmount(amount);
@@ -342,7 +343,7 @@ public class ShoppingTest {
         assertEquals(-shoppingService.calculatorValue().intValue(), change);
     }
 
-    public void givenTheFollowingGroceries(List<Grocery> groceries) {
+    public void givenTheFollowingGroceries(Grocery... groceries) {
         for (Grocery grocery : groceries) {
             shoppingService.calculatorPush(grocery.getPrice());
             shoppingService.calculatorPush("+");
@@ -361,7 +362,7 @@ public class ShoppingTest {
 Let's count the number of lines:
 
 * Cucumber: ShoppingSteps 123 + ParameterTypes 21 + RunCucumberTest 16 + shopping.feature 20 = Total: 180 lines
-* Smart BDD: ShoppingTest 116 lines = Total: 116 lines
+* Smart BDD: ShoppingTest 114 lines = Total: 114 lines
 
 | Cucumber                  |       Smart BDD        |
 |:--------------------------|:----------------------:|  
@@ -369,7 +370,7 @@ Let's count the number of lines:
 | ParameterTypes 21 lines   |                        |
 | runCucumberTest 16 lines  |                        |
 | shopping.feature 20 lines |                        |
-| Total 180 lines           |    Total 116 lines     |
+| Total 180 lines           | Total 114 lines        |
 
 Hopefully I have demonstrated the simplicity and productivity of Smart BDD.
 
@@ -414,8 +415,7 @@ public class BookControllerIT {
 
    private void generateSequenceDiagram(String isbn, ResponseEntity<String> response, HttpHeaders headers) {
       sequenceDiagram().add(aMessage().from("User").to("BookStore").text("/book/" + isbn));
-
-
+      
       List<ServeEvent> allServeEvents = getAllServeEvents();
       allServeEvents.forEach(event -> {
          sequenceDiagram().add(aMessage().from("BookStore").to("ISBNdb").text(event.getRequest().getUrl()));

@@ -25,5 +25,5 @@ Feature: Shopping
       | bread | 7     |
       | soap  | 5     |
     When I pay 25
-    When with currency "Dollars"
+    And with currency "Dollars"
     Then my change should be 29

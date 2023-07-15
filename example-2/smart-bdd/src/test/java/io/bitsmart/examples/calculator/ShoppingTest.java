@@ -17,20 +17,20 @@ public class ShoppingTest {
 
     @Test
     void giveCorrectChange() {
-        givenTheFollowingGroceries(List.of(
+        givenTheFollowingGroceries(
             item("milk", 9),
             item("bread", 7),
-            item("soap", 5)));
+            item("soap", 5));
         whenIPay(25);
         myChangeShouldBe(4);
     }
 
     @Test
     void giveCorrectChangeWhenCurrencyIsDollars() {
-        givenTheFollowingGroceries(List.of(
+        givenTheFollowingGroceries(
             item("milk", 9),
             item("bread", 7),
-            item("soap", 5)));
+            item("soap", 5));
         whenIPay(25).withCurrency("Dollars");
         myChangeShouldBe(29);
     }
@@ -44,7 +44,7 @@ public class ShoppingTest {
         assertEquals(-shoppingService.calculatorValue().intValue(), change);
     }
 
-    public void givenTheFollowingGroceries(List<Grocery> groceries) {
+    public void givenTheFollowingGroceries(Grocery... groceries) {
         for (Grocery grocery : groceries) {
             shoppingService.calculatorPush(grocery.getPrice());
             shoppingService.calculatorPush("+");

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ShoppingSteps {
 
     private final ShoppingService shoppingService = new ShoppingService();
-    private PayBuilder payBuilder = new PayBuilder();
+    private final PayBuilder payBuilder = new PayBuilder();
 
     @Given("the following groceries:")
     public void the_following_groceries(List<Grocery> groceries) {

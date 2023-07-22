@@ -5,15 +5,13 @@ import io.cucumber.examples.calculator.ShoppingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.List;
-
 import static io.bitsmart.examples.calculator.ShoppingTest.Grocery.item;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SmartReport.class)
 public class ShoppingTest {
     private final ShoppingService shoppingService = new ShoppingService();
-    private PayBuilder payBuilder = new PayBuilder();
+    private final PayBuilder payBuilder = new PayBuilder();
 
     @Test
     void giveCorrectChange() {
@@ -41,7 +39,7 @@ public class ShoppingTest {
 
     public void myChangeShouldBe(int change) {
         pay();
-        assertEquals(-shoppingService.calculatorValue().intValue(), change);
+        assertThat(-shoppingService.calculatorValue().intValue()).isEqualTo(change);
     }
 
     public void givenTheFollowingGroceries(Grocery... groceries) {
